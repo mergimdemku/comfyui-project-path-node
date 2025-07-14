@@ -1,6 +1,6 @@
 {
   "name": "Project Path Node",
-  "author": "Your Name",
+  "author": "MD",
   "description": "Outputs the project base folder path as string",
   "url": "https://github.com/yourusername/comfyui-project-path-node",
   "version": "1.0.0",
