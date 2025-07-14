@@ -1,18 +1,54 @@
-from comfy.model_management import register_node
+import os
+import folder_paths
 
 class ProjectPathNode:
-    @staticmethod
-    def INPUT_TYPES():
-        return {}  # No inputs needed
+    """
+    A node that provides the project path for file operations
+    """
     
-    RETURN_TYPES = ("STRING",)  # Output is a string
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "subfolder": ("STRING", {
+                    "default": "outputs",
+                    "multiline": False
+                }),
+            },
+            "optional": {
+                "create_folder": ("BOOLEAN", {"default": True}),
+            }
+        }
+    
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("path",)
     FUNCTION = "get_project_path"
-    CATEGORY = "Custom"
+    CATEGORY = "utils"
+    
+    def get_project_path(self, subfolder="outputs", create_folder=True):
+        # Get ComfyUI's base directory
+        base_path = folder_paths.get_directory_by_type("output")
+        
+        # If subfolder is specified, join it with base path
+        if subfolder:
+            full_path = os.path.join(base_path, subfolder)
+        else:
+            full_path = base_path
+            
+        # Create folder if it doesn't exist and create_folder is True
+        if create_folder and not os.path.exists(full_path):
+            os.makedirs(full_path, exist_ok=True)
+            
+        return (full_path,)
 
-    @staticmethod
-    def get_project_path():
-        # Set your project folder path here (change as needed)
-        project_path = "E:/MyAIProject/"
-        return (project_path,)
+# Required for ComfyUI to recognize the node
+NODE_CLASS_MAPPINGS = {
+    "ProjectPathNode": ProjectPathNode
+}
 
-register_node(ProjectPathNode)
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "ProjectPathNode": "Project Path"
+}
